@@ -1,0 +1,37 @@
+
+[v-cloak] {
+    display: none;
+}
+
+.fas, .far {
+    font-size: 20px;
+}
+
+.fa-plus {
+    transition-property: transform;
+    transition-duration: 2s;
+    transition-timing-function: ease-in;
+}
+
+.fa-pencil-alt {
+    transition-duration:.3s;
+    transition-property: font-size;
+}
+
+button:hover .fa-pencil-alt {
+    font-size: 21px;
+}
+
+button:hover .fa-plus {
+    transform: rotate(180deg);
+}
+
+.fa-trash-alt {
+    transition-property: color;
+    transition-timing-function: ease-out;
+    transition-duration: .5s;
+}
+
+button:hover .fa-trash-alt {
+    color: #ff253a;
+}
