@@ -2,6 +2,7 @@ const app = Vue.createApp({
     data: () => ({
         todos: [],
         todoText: '',
+        color: ''
     }),
 
     mounted () {
@@ -14,14 +15,19 @@ const app = Vue.createApp({
     methods: {
         addTodo() {
             if (this.todoText !== '') {
+                const date = new Date().getMinutes() < 10 ? 
+                new Date().getHours() + ':0' + new Date().getMinutes() : 
+                new Date().getHours() + ':' + new Date().getMinutes()
                 this.todos.push({
                     name: this.todoText,
                     edit: false,
-                    editText: '',
+                    editText: this.todoText,
                     items: [],
-                    date: new Date().getHours() + ':' + new Date().getMinutes()
+                    date,
+                    color: this.color
                 })
                 this.todoText = ''
+                console.log(this.color)
                 localStorage.local = JSON.stringify(this.todos)
             }
         },
@@ -46,7 +52,19 @@ app.component('todo-item', {
                 this.item.edit = false
                 localStorage.local = JSON.stringify(this.todos)
             }
-        }
+        },
+        itemUp(index) {
+            let t = this.todo.items[index - 1]
+            this.todo.items[index - 1] = this.todo.items[index]
+            this.todo.items[index] = t
+            localStorage.local = JSON.stringify(this.todos)
+        },
+        itemDown(index) {
+            let t = this.todo.items[index + 1]
+            this.todo.items[index + 1] = this.todo.items[index]
+            this.todo.items[index] = t
+            localStorage.local = JSON.stringify(this.todos)
+        }   
     },
     template: `
         <li class="list-group-item">
@@ -56,7 +74,9 @@ app.component('todo-item', {
                 {{ item.text }}
             </div>
             <div>
-                <button @click="item.edit = !item.edit" style="border: none; background: none;"><i class="fas fa-pencil-alt"></i></button>
+            <button v-if='index' @click="itemUp(index)" style="border: none; background: none;"><i class="fas fa-arrow-up"></i></button>
+            <button v-if='index !== todo.items.length - 1' @click="itemDown(index)" style="border: none; background: none;"><i class="fas fa-arrow-down"></i></button>
+            <button @click="item.edit = !item.edit" style="border: none; background: none;"><i class="fas fa-pencil-alt"></i></button>
             <button @click.stop.prevent="delTodoItem(this.index)" style="border: none; background: none;"><i class="far fa-trash-alt"></i></button>
             </div>
             </div>
@@ -71,27 +91,40 @@ app.component('todo', {
         todos: Array
     },
     data: () => ({
-        todoItemText: ''
+        todoItemText: []
     }),
     methods: {
-        addTodoItem(todo) {
-            if (this.todoItemText !== '') {
+        addTodoItem(todo, index) {
+            if (this.todoItemText[index] !== '') {
                 todo.items.push({
-                    text: this.todoItemText,
+                    text: this.todoItemText[index],
                     done: false,
-                    editText: '',
-                    edit: ''
+                    editText: this.todoItemText,
+                    edit: false,
                 })
-                this.todoItemText = ''
                 localStorage.local = JSON.stringify(this.todos)
             }
         },
+        delTodo(index) {
+            this.todos.splice(index, 1)
+            localStorage.local = JSON.stringify(this.todos)
+        },
+        editTodo(todo) {
+            if (todo.editText !== '') {
+                todo.name = todo.editText
+                todo.edit = false
+                localStorage.local = JSON.stringify(this.todos)
+            }
+        },
+        todosFilter() {
+
+        }
     },
     template: `
-        <div class="card mb-3" v-for="(todo, index) in todos">
-        <div class="d-flex justify-content-between p-3">
-                <input @keypress.enter="addTodoItem" v-model="todoItemText" class="form-control" type="text">
-                <button @click="addTodoItem(todo)" style="border: none; background: none;">
+        <div class="card mb-3" v-for="(todo, index) in todosFilter">
+        <div :style="{borderTop: todo.color + ' 10px solid !important'}" class="note d-flex justify-content-between p-3">
+                <input @keypress.enter="addTodoItem(todo, index)" v-model="todoItemText[index]" class="form-control" type="text">
+                <button @click="addTodoItem(todo, index)" style="border: none; background: none;">
                     <i class="fas fa-plus"></i>
                 </button>
         </div>
@@ -102,15 +135,27 @@ app.component('todo', {
                     <h6 class="card-subtitle mb-2 text-muted">{{ todo.date }}</h6>
                 </div>
                 <div>
-                    <button @click="item.edit = !item.edit" style="border: none; background: none;"><i class="fas fa-pencil-alt"></i></button>
-                    <button @click.stop.prevent="delTodoItem(this.index)" style="border: none; background: none;"><i class="pencil far fa-trash-alt"></i></button>
+                    <button @click="todo.edit = !todo.edit" style="border: none; background: none;"><i class="fas fa-pencil-alt"></i></button>
+                    <button @click.stop.prevent="delTodo(index)" style="border: none; background: none;"><i class="pencil far fa-trash-alt"></i></button>
                 </div>
             </div>
-            <input class="form-control" type="text">
+            <div class="d-flex justify-content-between" v-if="todo.edit">
+            <input @keypress.enter="editTodo(todo)" v-model="todo.editText" class="form-control" type="text">
+            <input type="color" @change="editTodo(todo)" class="form-control form-control-color" id="changeColor" v-model="todo.color" title="Choose your color">
+            </div>
+            
+
         </div>
             
-            <ul class="list-group list-group-flush">
-                <todo-item :todos="this.todos" :todo="todo" :item="item" :index="index" v-for="(item, index) in todos[index].items" :key="item"></todo-item>
+            <ul class="list-group droppable list-group-flush">
+                <todo-item 
+                :todos="this.todos" 
+                :todo="todo" 
+                :item="item" 
+                :index="index" 
+                v-for="(item, index) in todos[index].items" 
+                :key="item"
+                ></todo-item>
             </ul>
         </div>
     `

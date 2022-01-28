@@ -15,11 +15,13 @@
 
 .fa-pencil-alt {
     transition-duration:.3s;
-    transition-property: font-size;
+    transition-property: transform, color;
+    transition-timing-function: ease-in;
 }
 
 button:hover .fa-pencil-alt {
-    font-size: 21px;
+    transform: rotate(-10deg);
+    color:lightgreen;
 }
 
 button:hover .fa-plus {
@@ -27,11 +29,32 @@ button:hover .fa-plus {
 }
 
 .fa-trash-alt {
-    transition-property: color;
-    transition-timing-function: ease-out;
-    transition-duration: .5s;
+    transition-duration:.3s;
+    transition-property: transform, color;
+    transition-timing-function: ease-in;
 }
 
 button:hover .fa-trash-alt {
+    transform: rotate(-10deg);
     color: #ff253a;
 }
+
+.fa-arrow-up, .fa-arrow-down {
+    transition-duration:.3s;
+    transition-property: color, transform;
+    transition-timing-function: ease-in;
+    
+}
+
+button:hover .fa-arrow-up, button:hover .fa-arrow-down {
+    color:lightgreen;
+    transform: rotate(-10deg);
+}
+
+* {
+    transition: 1s;
+}
+
+/* .note {
+    border-top: 10px solid red !important;
+} */

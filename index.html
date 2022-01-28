@@ -13,7 +13,21 @@
 <body>
     <div id="app" v-cloak>
         <div class="main container pt-5">
+            <div class="d-flex justify-content-between mb-2">
+                <div class="d-flex justify-content-between">
+                    <input class="form-control" type="text">
+                    <button @click="addTodo" style="border: none; background: none;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <select style="width: 100px;" class="form-select" aria-label="Default select example">
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                  </select>
+            </div>
             <div class="d-flex justify-content-between mb-5">
+                <input type="color" class="form-control form-control-color" id="exampleColorInput" v-model="color" value="#FFFFFF" title="Choose your color">
                 <input @keypress.enter="addTodo" v-model="todoText" class="form-control" type="text">
                 <button @click="addTodo" style="border: none; background: none;">
                     <i class="fas fa-plus"></i>
